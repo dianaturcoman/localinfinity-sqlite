@@ -1,8 +1,7 @@
-const sequelize = require("../config/db");
-const { DataTypes } = require("sequelize");
+const connection = require("../config/db");
 const Sequelize = require("sequelize");
 
-const Login = sequelize.define(
+const Login = connection.define(
   "login",
   {
     ID: {
@@ -19,27 +18,27 @@ const Login = sequelize.define(
       allowNull: false,
     },
     Accesslevel: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
     Lastlogin: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
     Lastlogout: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
     Lang: {
-      type: DataTypes.TEXT,
+      type: Sequelize.TEXT,
       allowNull: false,
     },
     Sessionstatus: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.INTEGER,
     },
   },
   {
-    sequelize,
+    connection,
     freezeTableName: true,
     tableName: "login",
     timestamps: false,
