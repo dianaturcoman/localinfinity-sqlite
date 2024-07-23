@@ -22,22 +22,20 @@ open existing database file \*.sqlite: > sqlite3 : > attach "bica.sqlite" as db1
 
 # start the app
 
-https://stackblitz.com/edit/sqlite3-persist-0?file=index.js
+> npm start
+
+# available api calls
+
+- GET /api/login
+- POST /api/login
+  {
+  "username": ""
+  }
+- GET /api/fritzbox
 
 # Libraries
 
 @sqlite3 : 9.6.5
 @sequelize/core
 express
-
-# Examples how to make it work
-
-https://dev.to/getaclue/how-to-install-sequelize-in-expressjs-app-with-sqlite-4p63
-
-https://stackblitz.com/edit/sqlite3-persist-pndsnw?file=read.js
-https://stackblitz.com/edit/sqlite3-persist-0?file=index.js
-https://www.codeease.net/programming/javascript/using-sequelize-to-read-from-a-table
-https://www.digitalocean.com/community/tutorials/how-to-use-sequelize-with-node-js-and-mysql#step-3-using-sequelize-for-database-queries
-https://sequelize.org/docs/v6/core-concepts/model-instances/
-https://www.shanegibney.com/shanegibney/sequelize-orm-with-express-basics/
-https://stackabuse.com/using-sequelize-js-and-sqlite-in-an-express-js-app/
+cors
