@@ -1,5 +1,17 @@
 {
+  "name": "sequelize-localinfinity",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "license": "ISC",
   "dependencies": {
+    "@sequelize/core": "^7.0.0-alpha.37",
+    "express": "^4.19.2",
+    "sequelize": "^6.6.5",
     "sqlite3": "^5.1.7"
   }
 }
