@@ -59,7 +59,7 @@ app.get("/api/fritzbox", (req, res) => {
     });
 });
 
-const accessPort = "4001";
+const accessPort = "8001";
 app.listen(accessPort, () => {
   console.log("Running server on port " + accessPort);
 });
