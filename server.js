@@ -6,6 +6,9 @@ const cors = require("cors");
 // start app
 const app = express();
 
+// read body
+app.use(express.json());
+
 // Set up CORS
 app.use(
   cors({
@@ -48,14 +51,29 @@ app.post("/api/login", (req, res) => {
     });
 });
 
-// Get fritzbox data
+// Handle fritzbox data
 
 app.get("/api/fritzbox", (req, res) => {
   return Fritzbox.findAll()
-    .then((contacts) => res.send(contacts))
+    .then((v) => res.send(v))
     .catch((err) => {
-      console.log("There was an error querying contacts", JSON.stringify(err));
+      console.log("There was an error querying fritzbox", JSON.stringify(err));
       return res.send(err);
+    });
+});
+
+app.put("/api/fritzbox/:id", (req, res) => {
+  const id = req.params.id;
+  const { value } = req.body;
+  console.log("updating", req.params.id, req.body);
+  Fritzbox.update({ Value: value }, { where: { ID: id } })
+    .then((rows) => {
+      // return number of updated rows
+      res.json(rows);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(404).send(error);
     });
 });
 
