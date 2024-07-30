@@ -1,7 +1,14 @@
+// import {Request, Response} from "express";
+// import * as express from 'express';
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
 
-dotenv.config();
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+import * as jwt from 'jsonwebtoken';
+import * as fs from "fs";
+
+// import dotenv from "dotenv";
+// dotenv.config();
 
 // const express = require("express");
 const Login = require("./models/login");
@@ -9,10 +16,45 @@ const Fritzbox = require("./models/fritzbox");
 const cors = require("cors");
 
 // start app
+// const app: Application = express();
 const app: Express = express();
 
 // read body
-app.use(express.json());
+// app.use(express.json());
+app.use(bodyParser.json());
+
+const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
+
+export function loginRoute(req: Request, res: Response) {
+
+  const email = req.body.email,
+        password = req.body.password;
+
+  if (validateEmailAndPassword()) {
+     const userId = findUserIdForEmail(email);
+
+      const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
+              algorithm: 'RS256',
+              expiresIn: 120,
+              subject: userId
+          });
+
+        // send the JWT back to the user
+        // TODO - multiple options available
+  }
+  else {
+      // send status 401 Unauthorized
+      res.sendStatus(401);
+  }
+}
+
+function validateEmailAndPassword(){
+  return true;
+}
+
+function findUserIdForEmail(email: string){
+  return '';
+}
 
 // Set up CORS
 app.use(
@@ -33,7 +75,7 @@ app.use(
 
 // Get all users
 
-app.get("/api/login", (req, res) => {
+app.get("/api/login", (req: any, res: { send: (arg0: any) => any; }) => {
   return Login.findAll()
     .then((contacts: any) => res.send(contacts))
     .catch((err: any) => {
@@ -44,7 +86,7 @@ app.get("/api/login", (req, res) => {
 
 // Login - Get one user
 
-app.post("/api/login", (req, res) => {
+app.post("/api/login", (req: { body: { username: any; }; }, res: { send: (arg0: any) => any; }) => {
   let { username } = req.body;
   return Login.findAll({
     where: { Username: username },
@@ -58,7 +100,7 @@ app.post("/api/login", (req, res) => {
 
 // Handle fritzbox data
 
-app.get("/api/fritzbox", (req, res) => {
+app.get("/api/fritzbox", (req: any, res: { send: (arg0: any) => any; }) => {
   return Fritzbox.findAll()
     .then((v: any) => res.send(v))
     .catch((err: any) => {

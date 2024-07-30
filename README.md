@@ -44,3 +44,5 @@ typescript
 @types/node
 dotenv
 ts-node
+jsonwebtoken
+@types/jsonwebtoken
