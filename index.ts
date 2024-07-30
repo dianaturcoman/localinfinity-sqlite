@@ -1,10 +1,15 @@
-const express = require("express");
+import express, { Express, Request, Response } from "express";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+// const express = require("express");
 const Login = require("./models/login");
 const Fritzbox = require("./models/fritzbox");
 const cors = require("cors");
 
 // start app
-const app = express();
+const app: Express = express();
 
 // read body
 app.use(express.json());
@@ -30,8 +35,8 @@ app.use(
 
 app.get("/api/login", (req, res) => {
   return Login.findAll()
-    .then((contacts) => res.send(contacts))
-    .catch((err) => {
+    .then((contacts: any) => res.send(contacts))
+    .catch((err: any) => {
       console.log("There was an error querying contacts", JSON.stringify(err));
       return res.send(err);
     });
@@ -44,8 +49,8 @@ app.post("/api/login", (req, res) => {
   return Login.findAll({
     where: { Username: username },
   })
-    .then((contacts) => res.send(contacts))
-    .catch((err) => {
+    .then((contacts: any) => res.send(contacts))
+    .catch((err: any) => {
       console.log("There was an error querying contacts", JSON.stringify(err));
       return res.send(err);
     });
@@ -55,8 +60,8 @@ app.post("/api/login", (req, res) => {
 
 app.get("/api/fritzbox", (req, res) => {
   return Fritzbox.findAll()
-    .then((v) => res.send(v))
-    .catch((err) => {
+    .then((v: any) => res.send(v))
+    .catch((err: any) => {
       console.log("There was an error querying fritzbox", JSON.stringify(err));
       return res.send(err);
     });
@@ -67,11 +72,11 @@ app.put("/api/fritzbox/:id", (req, res) => {
   const { value } = req.body;
   console.log("updating", req.params.id, req.body);
   Fritzbox.update({ Value: value }, { where: { ID: id } })
-    .then((rows) => {
+    .then((rows: any) => {
       // return number of updated rows
       res.json(rows);
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.log(error);
       res.status(404).send(error);
     });

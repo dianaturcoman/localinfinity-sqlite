@@ -39,3 +39,8 @@ open existing database file \*.sqlite: > sqlite3 : > attach "bica.sqlite" as db1
 @sequelize/core
 express
 cors
+typescript
+@types/express
+@types/node
+dotenv
+ts-node
