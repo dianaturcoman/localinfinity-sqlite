@@ -1,75 +1,26 @@
-// import {Request, Response} from "express";
-// import * as express from 'express';
 import express, { Express, Request, Response } from "express";
-
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 import * as jwt from 'jsonwebtoken';
 import * as fs from "fs";
-
-// import dotenv from "dotenv";
-// dotenv.config();
-
-// const express = require("express");
 const Login = require("./models/login");
 const Fritzbox = require("./models/fritzbox");
 const cors = require("cors");
 
 // start app
-// const app: Application = express();
 const app: Express = express();
 
 // read body
-// app.use(express.json());
 app.use(bodyParser.json());
 
-const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
-
-export function loginRoute(req: Request, res: Response) {
-
-  const email = req.body.email,
-        password = req.body.password;
-
-  if (validateEmailAndPassword()) {
-     const userId = findUserIdForEmail(email);
-
-      const jwtBearerToken = jwt.sign({}, RSA_PRIVATE_KEY, {
-              algorithm: 'RS256',
-              expiresIn: 120,
-              subject: userId
-          });
-
-        // send the JWT back to the user
-        // TODO - multiple options available
-  }
-  else {
-      // send status 401 Unauthorized
-      res.sendStatus(401);
-  }
-}
-
-function validateEmailAndPassword(){
-  return true;
-}
-
-function findUserIdForEmail(email: string){
-  return '';
-}
+// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
 
 // Set up CORS
 app.use(
   cors({
-    origin: true, // "true" will copy the domain of the request back
-    // to the reply. If you need more control than this
-    // use a function.
-
+    origin: true,
     credentials: true, // This MUST be "true" if your endpoint is
-    // authenticated via either a session cookie
-    // or Authorization header. Otherwise the
-    // browser will block the response.
-
     methods: "POST,GET,PUT,OPTIONS,DELETE", // Make sure you're not blocking
-    // pre-flight OPTIONS requests
   })
 );
 
@@ -86,16 +37,40 @@ app.get("/api/login", (req: any, res: { send: (arg0: any) => any; }) => {
 
 // Login - Get one user
 
-app.post("/api/login", (req: { body: { username: any; }; }, res: { send: (arg0: any) => any; }) => {
-  let { username } = req.body;
-  return Login.findAll({
-    where: { Username: username },
-  })
-    .then((contacts: any) => res.send(contacts))
-    .catch((err: any) => {
-      console.log("There was an error querying contacts", JSON.stringify(err));
-      return res.send(err);
-    });
+app.post("/api/login", (req: { body: { username: any, password: any }; }, res) => {
+  if (!req.body.username || !req.body.password) {
+		res.status(400).send('You need a username and password');
+		return;
+	}
+
+  let { username, password } = req.body;
+  const user = Login.findAll({
+      where: { Username: username, Password: password },
+    })
+
+  if (!user) {
+		res.status(401).send('User not found');
+		return;
+	}
+
+  const token = jwt.sign(
+		{
+			sub: user.id,
+			username: user.username
+		},
+		'mysupersecretkey',
+		{ expiresIn: '3 hours' }
+	);
+
+	res.status(200).send({ access_token: token });
+  // return Login.findAll({
+  //   where: { Username: username, Password: password },
+  // })
+  //   .then((contacts: any) => res.send(contacts))
+  //   .catch((err: any) => {
+  //     console.log("There was an error querying contacts", JSON.stringify(err));
+  //     return res.send(err);
+    // });
 });
 
 // Handle fritzbox data
