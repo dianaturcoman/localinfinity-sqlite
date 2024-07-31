@@ -37,40 +37,34 @@ app.get("/api/login", (req: any, res: { send: (arg0: any) => any; }) => {
 
 // Login - Get one user
 
+
+// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
+
 app.post("/api/login", (req: { body: { username: any, password: any }; }, res) => {
   if (!req.body.username || !req.body.password) {
-		res.status(400).send('You need a username and password');
-		return;
-	}
+    res.status(400).send('You need a username and password');
+    return;
+  }
 
   let { username, password } = req.body;
-  const user = Login.findAll({
-      where: { Username: username, Password: password },
-    })
-
-  if (!user) {
-		res.status(401).send('User not found');
-		return;
-	}
-
-  const token = jwt.sign(
-		{
-			sub: user.id,
-			username: user.username
-		},
-		'mysupersecretkey',
-		{ expiresIn: '3 hours' }
-	);
-
-	res.status(200).send({ access_token: token });
-  // return Login.findAll({
-  //   where: { Username: username, Password: password },
-  // })
-  //   .then((contacts: any) => res.send(contacts))
-  //   .catch((err: any) => {
-  //     console.log("There was an error querying contacts", JSON.stringify(err));
-  //     return res.send(err);
-    // });
+  return Login.findAll({
+    where: { Username: username, Password: password },
+  }).then((contacts: any) => {
+    const user = contacts[0];
+    const jwtBearerToken = jwt.sign(
+      {
+        sub: user.id,
+        username: user.username
+      },
+      'mysupersecretkey',
+    );
+    console.log("returning status 200", jwtBearerToken);
+    res.status(200).json({ idToken: jwtBearerToken, expiresIn: '3 hours', user });
+  }).catch((err: any) => {
+    console.log("There was an error querying contacts", JSON.stringify(err));
+    console.log("returning status 401");
+    res.status(401).send('User not found');
+  });
 });
 
 // Handle fritzbox data
