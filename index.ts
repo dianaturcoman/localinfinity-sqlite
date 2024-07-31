@@ -1,19 +1,20 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-import * as jwt from 'jsonwebtoken';
 import * as fs from "fs";
 const Login = require("./models/login");
 const Fritzbox = require("./models/fritzbox");
 const cors = require("cors");
+import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
+
+// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
+export const RSA_PRIVATE_KEY: Secret = 'your-secret-key-here';
 
 // start app
 const app: Express = express();
 
 // read body
 app.use(bodyParser.json());
-
-// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
 
 // Set up CORS
 app.use(
@@ -26,7 +27,28 @@ app.use(
 
 // Get all users
 
-app.get("/api/login", (req: any, res: { send: (arg0: any) => any; }) => {
+export interface CustomRequest extends Request {
+  token: string | JwtPayload;
+ }
+
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+      throw new Error();
+    }
+
+    const decoded = jwt.verify(token, RSA_PRIVATE_KEY);
+    (req as CustomRequest).token = decoded;
+
+    next();
+  } catch (err) {
+    res.status(401).send('Please authenticate');
+  }
+ };
+
+app.get("/api/login", authenticateToken, (req: any, res: { send: (arg0: any) => any; }) => {
   return Login.findAll()
     .then((contacts: any) => res.send(contacts))
     .catch((err: any) => {
@@ -36,9 +58,6 @@ app.get("/api/login", (req: any, res: { send: (arg0: any) => any; }) => {
 });
 
 // Login - Get one user
-
-
-// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
 
 app.post("/api/login", (req: { body: { username: any, password: any }; }, res) => {
   if (!req.body.username || !req.body.password) {
@@ -56,7 +75,7 @@ app.post("/api/login", (req: { body: { username: any, password: any }; }, res) =
         sub: user.id,
         username: user.username
       },
-      'mysupersecretkey',
+      RSA_PRIVATE_KEY,
     );
     console.log("returning status 200", jwtBearerToken);
     res.status(200).json({ idToken: jwtBearerToken, expiresIn: '3 hours', user });
@@ -97,3 +116,4 @@ const accessPort = "8001";
 app.listen(accessPort, () => {
   console.log("Running server on port " + accessPort);
 });
+
