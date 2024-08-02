@@ -78,7 +78,7 @@ app.post("/api/login", (req: { body: { username: any, password: any }; }, res) =
       RSA_PRIVATE_KEY,
     );
     console.log("returning status 200", jwtBearerToken);
-    res.status(200).json({ idToken: jwtBearerToken, expiresIn: '3 hours', user });
+    res.status(200).json({ idToken: jwtBearerToken, expiresIn: '120', user });
   }).catch((err: any) => {
     console.log("There was an error querying contacts", JSON.stringify(err));
     console.log("returning status 401");
