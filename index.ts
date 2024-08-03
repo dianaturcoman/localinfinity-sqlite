@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 import * as fs from "fs";
 const Login = require("./models/login");
-const Fritzbox = require("./models/fritzbox");
 const cors = require("cors");
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 
@@ -84,32 +83,6 @@ app.post("/api/login", (req: { body: { username: any, password: any }; }, res) =
     console.log("returning status 401");
     res.status(401).send('User not found');
   });
-});
-
-// Handle fritzbox data
-
-app.get("/api/fritzbox", (req: any, res: { send: (arg0: any) => any; }) => {
-  return Fritzbox.findAll()
-    .then((v: any) => res.send(v))
-    .catch((err: any) => {
-      console.log("There was an error querying fritzbox", JSON.stringify(err));
-      return res.send(err);
-    });
-});
-
-app.put("/api/fritzbox/:id", (req, res) => {
-  const id = req.params.id;
-  const { value } = req.body;
-  console.log("updating", req.params.id, req.body);
-  Fritzbox.update({ Value: value }, { where: { ID: id } })
-    .then((rows: any) => {
-      // return number of updated rows
-      res.json(rows);
-    })
-    .catch((error: any) => {
-      console.log(error);
-      res.status(404).send(error);
-    });
 });
 
 const accessPort = "8001";

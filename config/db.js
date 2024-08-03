@@ -1,9 +1,9 @@
 const Sequelize = require("sequelize");
 
-const connection = new Sequelize("bica", "", "", {
+const connection = new Sequelize("DBsqlite", "", "", {
   host: "localhost",
   dialect: "sqlite",
-  storage: "./data/bica.sqlite",
+  storage: "./data/DBsqlite.sqlite",
   define: {
     freezeTableName: true,
     timestamps: false,
