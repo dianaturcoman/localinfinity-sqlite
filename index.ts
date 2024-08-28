@@ -1,13 +1,11 @@
 import express, { Express, Request, Response, NextFunction } from "express";
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
 import * as fs from "fs";
 const Login = require("./models/login");
 const cors = require("cors");
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 
-// const RSA_PRIVATE_KEY = fs.readFileSync('./demos/private.key');
-export const RSA_PRIVATE_KEY: Secret = 'your-secret-key-here';
+const RSA_PRIVATE_KEY = fs.readFileSync('./config/private.key');
 
 // start app
 const app: Express = express();
@@ -24,8 +22,12 @@ app.use(
   })
 );
 
-// Get all users
-
+// Implement JWT Authentication Token : https://jwt.io/
+// Other options for building the authentication in a separate project (the right way to do it):
+// - ORY : https://www.ory.sh/docs/kratos/quickstart , https://www.ory.sh/identity-authentication/
+// - oauth : https://auth0.com/intro-to-iam/what-is-oauth-2
+// - authelia : https://www.authelia.com/overview/prologue/introduction/
+// - Google/OpenID oauth based login and authentication for the traefik reverse proxy : https://github.com/thomseddon/traefik-forward-auth
 export interface CustomRequest extends Request {
   token: string | JwtPayload;
  }
@@ -47,6 +49,9 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
   }
  };
 
+
+// Get all users
+
 app.get("/api/login", authenticateToken, (req: any, res: { send: (arg0: any) => any; }) => {
   return Login.findAll()
     .then((contacts: any) => res.send(contacts))
@@ -56,7 +61,7 @@ app.get("/api/login", authenticateToken, (req: any, res: { send: (arg0: any) => 
     });
 });
 
-// Login - Get one user
+// Login :: Get one user
 
 app.post("/api/login", (req: { body: { username: any, password: any }; }, res) => {
   if (!req.body.username || !req.body.password) {
