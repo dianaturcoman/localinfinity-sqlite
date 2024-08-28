@@ -2,6 +2,7 @@ import express, { Express, Request, Response, NextFunction } from "express";
 const bodyParser = require('body-parser');
 import * as fs from "fs";
 const Login = require("./models/login");
+const Misc = require("./models/misc");
 const cors = require("cors");
 import jwt, { Secret, JwtPayload } from 'jsonwebtoken';
 
@@ -88,6 +89,19 @@ app.post("/api/login", (req: { body: { username: any, password: any }; }, res) =
     console.log("returning status 401");
     res.status(401).send('User not found');
   });
+});
+
+// Get admin message
+
+app.get("/api/adminmessage", authenticateToken, (req: any, res: { send: (arg0: any) => any; }) => {
+  return Misc.findAll({
+    where: { Field: 'AdminMessage' },
+  })
+    .then((response: any) => res.send(response[0]))
+    .catch((err: any) => {
+      console.log("There was an error querying misc table", JSON.stringify(err));
+      return res.send(err);
+    });
 });
 
 const accessPort = "8001";
