@@ -6,7 +6,6 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 
 // DB
-const connection = require("./config/db");
 const Login = require("./models/login");
 const Misc = require("./models/misc");
 

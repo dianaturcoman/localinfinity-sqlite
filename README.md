@@ -46,3 +46,4 @@ dotenv
 ts-node
 jsonwebtoken
 @types/jsonwebtoken
+nodemon ts-node // auto refresh with nodemon
